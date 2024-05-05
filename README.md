@@ -1,6 +1,4 @@
-Certainly! Below is a template for your GitHub README file describing your hospital website for doctors:
 
----
 
 # Hospital Website for Doctors
 
