@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Little Flower Hospital - Appointments</title>
+<style>
+body {
+font-family: Arial, sans-serif;
+background-color: #f4f4f4;
+margin: 0;
+padding: 0;
+position: relative; /* Ensure relative positioning for the body */
+}
+
+.container {
+max-width: 800px;
+margin: 0 auto;
+padding: 20px;
+text-align: center;
+/* Cover entire container */
+}
+
+h1 {
+color: #333;
+text-transform: uppercase;
+margin-bottom: 30px;
+}
+
+.hospital-name {
+background-image: url('appointment.avif'); /* Set background image */
+background-size: cover;
+text-align: center;
+margin-bottom: 0; /* Remove bottom margin */
+font-size: 24px;
+background-color: rgba(255, 255, 255, 0.7); /* Semi-transparent white background */
+padding: 10px;
+}
+
+.appointments-heading {
+text-align: center;
+margin-bottom: 20px;
+margin-top: 0; /* Remove top margin */
+}
+
+.current-date-time {
+position: absolute;
+top: 10px;
+left: 10px;
+font-size: 14px;
+color: #555;
+}
+
+.doctor-profile {
+position: absolute;
+right: 10px;
+margin-top: 35px;
+top: 100px; /* Adjust position as needed */
+padding: 10px;
+background-color: #fff;
+border-radius: 5px;
+box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+}
+
+.appointment-header {
+display: flex;
+align-items: center;
+justify-content: center;
+background-color: aqua;
+padding: 10px;
+margin-bottom: 20px;
+}
+
+.appointment-wrapper {
+margin-bottom: 20px;
+}
+
+.appointment-box {
+border: 1px solid #ccc;
+padding: 20px;
+transition: all 0.3s ease-in-out;
+background-color: #fff;
+}
+
+.appointment-box:hover {
+background-color: #f0f0f0;
+transform: scale(1.05);
+}
+
+.appointment-field {
+margin-bottom: 10px;
+color: #555;
+}
+
+.appointment-field strong {
+color: #333;
+}
+
+.no-appointments {
+text-align: center;
+padding: 20px;
+font-size: 18px;
+font-weight: bold;
+}
+</style>
+</head>
+
+<body>
+<!-- Your HTML content here -->
+<div class="current-date-time" id="currentDateTime">
+<!-- Time will be updated dynamically here -->
+</div>
+
+<div class="hospital-name">
+<h1>Little Flower Hospital</h1>
+</div>
+
+<div class="doctor-profile">
+<!-- Doctor profile information goes here -->
+<% if (Doctors) { %>
+<h2>Doctor Profile</h2>
+<p>Name: <%= Doctors.Name %></p>
+<p>Specialty: <%= Doctors.Specialization%></p>
+<% } else { %>
+<p>No doctor profile found</p>
+<% } %>
+</div>
+
+<div class="appointment-header">
+<h2>Appointments</h2>
+</div>
+
+<div class="container">
+<% if (Appointments.length === 0) { %>
+<div class="no-appointments">
+<h2>No appointments for today!</h2>
+</div>
+<% } else { %>
+<% Appointments.forEach(appointment => { %>
+<div class="appointment-wrapper" onclick="redirectToAppointment('<%= appointment.Name %>')">
+<div class="appointment-box">
+<div class="appointment-field"><strong>Name:</strong> <%= appointment.Name %></div>
+<div class="appointment-field"><strong>Age:</strong> <%= appointment.Age %></div>
+<div class="appointment-field"><strong>Description:</strong> <%= appointment.description %></div>
+<div class="appointment-field"><strong>Start Date:</strong> <%= appointment.startDate %></div>
+<div class="appointment-field"><strong>Patient ID:</strong> <%= appointment.Patient_ID %></div>
+<div class="appointment-field"><strong>Token Number:</strong> <%= appointment.Token %></div>
+<div class="appointment-field"><strong>Doctor_ID:</strong> <%= appointment.Doctor_ID %></div>
+<!-- Add more fields as needed -->
+</div>
+</div>
+<% }); %>
+<% } %>
+</div>
+
+<script>
+// Function to update the current date and time
+function updateDateTime() {
+var now = new Date();
+var date = now.toDateString();
+var time = now.toLocaleTimeString();
+document.getElementById('currentDateTime').innerHTML = date + '<br>' + time;
+}
+
+// Update the time initially
+updateDateTime();
+var isRedirectionDone = false;
+
+// Update the time every second
+setInterval(updateDateTime, 1000);
+
+// Function to redirect to the APPOINTMENT page with the clicked appointment's name
+function redirectToAppointment(appointmentName) {
+// Redirect to the APPOINTMENT page with the appointment name as a query parameter
+window.location.href = '/appointment?name=' + encodeURIComponent(appointmentName);
+}
+</script>
+
+</body>
+
+</html>

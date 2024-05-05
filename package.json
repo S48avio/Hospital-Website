@@ -1,0 +1,19 @@
+{
+  "dependencies": {
+    "@google/generative-ai": "^0.10.0",
+    "axios": "^1.6.8",
+    "bcrypt": "^5.1.1",
+    "ejs": "^3.1.10",
+    "express": "^4.19.2",
+    "mongoose": "^8.3.1"
+  },
+  "name": "doctor_portal",
+  "version": "1.0.0",
+  "description": "personalized hospital app:-mini project",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "author": "Savio",
+  "license": "ISC"
+}
