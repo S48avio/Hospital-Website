@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 // Connect to the MongoDB database
-const connect = mongoose.connect('mongodb+srv://saviosunny48:2TJsNwpNwqJX2aG3@cluster0.0zmwv1l.mongodb.net/');
+const connect = mongoose.connect('mongodb+srv://saviosunnydb.net/');
 
 // Handle database connection status
 connect.then(() => {
