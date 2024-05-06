@@ -102,7 +102,7 @@ app.get('/appointment', async (req, res) => {
         }));
         console.log(aggregatedMedicalRecords);
         
-        const genAI = new GoogleGenerativeAI('AIzaSyDrPrJ3cF1H4NV1zEfPyYNOdUJ2J2BUMSA');
+        const genAI = new GoogleGenerativeAI('AIzaSyDrPrJ3cF12BUMSA');
         const model = genAI.getGenerativeModel({ model: "gemini-pro" });
 
         // Including the description in the prompt sent to Gemini
