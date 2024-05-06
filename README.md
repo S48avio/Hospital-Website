@@ -26,7 +26,7 @@ This project is a hospital website built for doctors using Node.js, Express, Mon
 1. Clone the repository:
 
    ```bash
-   git clone https://github.com/your-username/hospital-website.git
+   git clone https://github.com/S48avio/hospital-website.git
    ```
 
 2. Navigate to the project directory:
