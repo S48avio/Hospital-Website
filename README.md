@@ -2,7 +2,7 @@
 
 # Hospital Website for Doctors
 
-This project is a hospital website built for doctors using Node.js, Express, MongoDB, HTML, CSS, and JavaScript. The website provides essential features for doctors to manage appointments, access patient information, write medical reports, prescriptions, and receive AI-powered suggestions using GEMINI support.
+This project is a hospital website built for doctors using Node.js, Express, MongoDB, EJS and CSS. The website provides essential features for doctors to manage appointments, access patient information, write medical reports, prescriptions, and receive AI-powered suggestions using GEMINI support.
 
 ## Features
 
