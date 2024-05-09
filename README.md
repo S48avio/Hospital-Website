@@ -17,9 +17,9 @@ This project is a hospital website built for doctors using Node.js, Express, Mon
 - **Node.js**: A JavaScript runtime used for building server-side applications.
 - **Express**: A fast, unopinionated, minimalist web framework for Node.js.
 - **MongoDB**: A NoSQL database used for storing patient information, medical reports, prescriptions, etc.
-- **HTML**: The standard markup language for creating web pages.
+- **EJS**: The standard markup language for creating dynamic web pages.
 - **CSS**: A style sheet language used for describing the presentation of a document written in HTML.
-- **JavaScript**: A programming language that enables interactive web pages.
+- 
 
 ## Installation
 
