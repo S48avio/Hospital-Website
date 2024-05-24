@@ -10,33 +10,56 @@ connect.then(() => {
     console.error("Error connecting to database:", error.message);
 });
 
-// Define schema for appointments
-const Prescript= mongoose.Schema({
+
+// Define schema for prescriptions
+
+
+// Define schema for prescriptions
+const prescriptionSchema = mongoose.Schema({
     Name: {
         type: String,
         required: true
     },
-    
     Patient_ID: {
         type: String,
         required: true
     },
-    Prescription: {
-        type: String,
-        required: true
+    Prescription1: {
+        Medicine: {
+            type: String,
+            required: true
+        },
+        Quantity: {
+            type: Number,
+            required: true
+        },
+        Timing: {
+            Morning: {
+                type: Boolean,
+                default: false
+            },
+            Afternoon: {
+                type: Boolean,
+                default: false
+            },
+            Night: {
+                type: Boolean,
+                default: false
+            }
+        },
+        Food: {
+            type: String,
+            required: true
+        },
+        Dosage: {
+            type: String,
+            required: true
+        }
     },
-    Date:{
-        type:Date,
-        required: true
-
-    },
-    
-    
+   
 });
 
-// Create Appointment model
-const Prescription= mongoose.model('Prescription', Prescript);
-console.log(Prescription);
+// Create Prescription model
+const Prescription = mongoose.model('Prescription', prescriptionSchema);
 
-// Export the Appointment model
 module.exports = Prescription;
