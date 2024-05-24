@@ -105,6 +105,18 @@
         input[type="submit"]:hover {
             background-color: #45a049;
         }
+
+        /* Newly added styles */
+        .prescription-box {
+            display: grid;
+            grid-template-columns: 1fr;
+            grid-gap: 10px;
+        }
+
+        .prescription-box select,
+        .prescription-box input[type="text"] {
+            width: 100%;
+        }
     </style>
 </head>
 
@@ -144,17 +156,45 @@
                         <input type="hidden" id="name" name="name" value="<%= appointment.Name %>">
                         <input type="hidden" id="age" name="age" value="<%= appointment.Age %>">
                         <input type="hidden" id="description" name="description" value="<%= appointment.description %>">
-                        <input type="hidden" id="startDate" name="startDate" value="<%= appointment.startDate %>">
+                        <input type="hidden" id="startDate" name="startDate" value="<%= appointment.StartDate %>">
                         <input type="hidden" id="patient_ID" name="patient_ID" value="<%= appointment.Patient_ID %>">
+                        <input type="hidden" id="Doctor_ID" name="Doctor_ID" value="<%= appointment.Doctor_ID %>">
                     <% }); %>
                     <label for="prescription">Prescription:</label>
-                    <textarea id="prescription" name="prescription" rows="4" placeholder="Enter prescription"></textarea>
+                    <div class="prescription-box">
+                        <label for="medicine">Medicine:</label>
+                        <select id="medicine" name="medicine">
+                            <!-- Loop through medicine options -->
+                            <% savio.forEach(item => { %>
+                                <option value="<%= item.medicine %>"><%= item.medicine %></option>
+                            <% }); %>
+                        </select>
+                        <p>Timings:</p>
+                        <select id="timing" name="timing">
+                            <option value="Morning">Morning</option>
+                            <option value="Afternoon">Afternoon</option>
+                            <option value="Night">Night</option>
+                        </select>
+                        
+                        <p>Quantity:</p>
+                        <select id="quantity" name="quantity">
+                            <option value=".5">.5</option>
+                            <option value="1">1</option>
+                            <option value="1.5">1.5</option>
+                            <option value="2">2</option>
+                        </select>
+                        <p>Food:</p>
+                        <select id="food" name="food">
+                            <option value="Before">Before</option>
+                            <option value="After">After</option>
+                        </select>
+                        <input type="text" id="dosage" name="dosage" placeholder="Dosage">
+                    </div>
 
                     <label for="findings">Findings:</label>
                     <textarea id="findings" name="findings" rows="4" placeholder="Enter findings"></textarea>
 
                     <input type="submit" value="Submit Medical Report">
-
                 </form>
                 <% }); %>
             </div>
@@ -165,6 +205,8 @@
                 <h2>Recent Medical Record</h2>
                 <p class="field-name">Prescription: </p>
                 <p><%= report.Prescription %></p>
+                <p class="field-name">Dosage </p>
+                <p><%= report.Dosage %></p>
                 <p class="field-name">Findings: </p>
                 <p><%= report.Findings %></p>
                 <p class="field-name">Appointment Date: </p>
@@ -205,7 +247,6 @@
 
     </div>
 
-    </div>
 </body>
 
 </html>
