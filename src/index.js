@@ -1,14 +1,15 @@
-
 const express = require('express');
 const path = require('path');
 const bodyParser = require('body-parser');
 const collection = require('./config.js');
 const Appointment = require('./appointmentModel.js');
 const Medical_records = require('./medicalrecord.js');
-const prescriptions = require('./prescription.js');
+const Prescriptions = require('./prescription.js');
 const Doctor = require('./doctor.js');
 const axios = require('axios');
+const Medicine=require('./medicine.js')
 const { GoogleGenerativeAI } = require("@google/generative-ai");
+
 
 const app = express();
 
@@ -65,15 +66,18 @@ app.post('/', async (req, res) => {
 
 app.get('/home', async (req, res) => {
     try {
+        
         const systemDate = new Date();
         const { username } = req.query;
         console.log(username);
-        const Appointments = await Appointment.find({ Appoint_Date: systemDate.toISOString().split('T')[0]} && {Doctor_ID: username});
+        const Appointments = await Appointment.find({ Doctor_ID: username});
         console.log(systemDate.toISOString().split('T')[0]);
+        console.log(Appointments)
        
         
         const Doctors = await Doctor.findOne({ Doctor_ID: username });
-        console.log(Doctors);        
+        console.log(Doctors); 
+        console.log(Appointments)       
         res.render('next', { Appointments, Doctors });
     } catch (error) {
         console.error("Error:", error.message);
@@ -98,11 +102,12 @@ app.get('/appointment', async (req, res) => {
             Name: record.Name,
             Patient_ID: record.Patient_ID,
             Prescription: record.Prescription,
+
             Findings: record.Findings
         }));
         console.log(aggregatedMedicalRecords);
         
-        const genAI = new GoogleGenerativeAI('AIzaSyDrPrJ3cF12BUMSA');
+        const genAI = new GoogleGenerativeAI('AIzaSyDrPrJ3cF1H4NV1zEfPyYNOdUJ2J2BUMSA');
         const model = genAI.getGenerativeModel({ model: "gemini-pro" });
 
         // Including the description in the prompt sent to Gemini
@@ -112,9 +117,20 @@ app.get('/appointment', async (req, res) => {
         const response = await result.response;
         const generatedText = response.text(); // Store the generated text
         console.log(generatedText);
+        const medicineData = await Medicine.findOne(); // Assuming there's only one document in the Medicine collection
+        
+        if (!medicineData) {
+            return res.status(404).send("Medicine data not found");
+        }
+
+        const savio = medicineData.medicines.map(item => ({
+            medicine: item.medicine,
+            cost: item.cost.$numberInt
+        })); // Extracting medicine names and costs
+        
 
         // Pass the generated text to the appointment.ejs page
-        res.render('appointments', { appoint, medical, generatedText });
+        res.render('appointments', { appoint, medical, generatedText,savio });
     } catch (error) {
         console.error("Error:", error.message);
         res.status(500).send("An error occurred. Please try again later.");
@@ -123,39 +139,59 @@ app.get('/appointment', async (req, res) => {
 
 app.post('/submitMedicalReport', async (req, res) => {
     try {
-        const { name, age, description, startDate, patient_ID, prescription, findings } = req.body;
-
+        const { name, age, description, startDate, patient_ID,  findings ,medicine,quantity,timing,food,dosage,Doctor_ID} = req.body;
+console.log(findings);
+console.log(medicine);
+console.log(dosage);
         // Get the current date with just the day and date
         const currentDate = new Date().toLocaleDateString('en-US', { day: 'numeric', month: 'numeric', year: 'numeric' });
+        const systemDate = new Date();
+        // Convert timing and food to booleans
+        const isMorning = timing === "Morning";
+        const isAfternoon = timing === "Afternoon";
+        const isNight = timing === "Night";
+        const isBefore = food === "before";
+        const isAfter = food === "after";
 
         const newMedicalRecord = new Medical_records({
             Name: name,
             Age: age,
             description: description,
-            startDate: startDate,
+            startDate: systemDate.toISOString().split('T')[0],
             Patient_ID: patient_ID,
-            Prescription: prescription,
+            Prescription: medicine,
+            Dosage:dosage,
             Findings: findings,
             Appoint_Date: currentDate // Set the date with just the day and date
         });
 
-        const newPrescript = new prescriptions({
+        const newPrescription = new Prescriptions({
             Name: name,
             Patient_ID: patient_ID,
-            Prescription: prescription,
-            Date: currentDate // Set the date with just the day and date
-        });
+            Prescription1: {
+              Medicine: medicine,
+              Quantity: quantity,
+              Timing: {
+                Morning: isMorning,
+                Afternoon: isAfternoon,
+                Night: isNight
+              },
+              Food: isBefore ? 'Before' : 'After', // Convert food to string
+              Dosage: dosage
+            }
+          });
 
-        await newPrescript.save();
+        await newPrescription.save();
         await newMedicalRecord.save();
         const appointmentToDelete = await Appointment.findOneAndDelete({ Name: name });
 
-        res.redirect('/home');
+        res.redirect(`/home?username=${Doctor_ID}`);
     } catch (error) {
         console.error("Error:", error.message);
         res.status(500).send("An error occurred. Please try again later.");
     }
 });
+
 
 
 const port = 5000;
