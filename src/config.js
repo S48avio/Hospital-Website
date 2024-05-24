@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const connect = mongoose.connect('mongodb+srv://sab.net/');
+const connect = mongoose.connect('mongodb+srv://saviosunny48:2TJsNwpNwqJX2aG3@cluster0.0zmwv1l.mongodb.net/');
 connect.then(()=>{
     console.log("Database connection established");
 })
