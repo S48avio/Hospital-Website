@@ -201,7 +201,10 @@ app.post('/submitMedicalReport', async (req, res) => {
         await newMedicalRecord.save();
         const appointmentToDelete = await Appointment.findOneAndDelete({ Name: name });
 
-        res.redirect(`/home?username=${Doctor_ID}&token=${req.query.token}`);
+        // Re-generate a new token to extend session after form submission
+        const accessToken = jwt.sign({ username: Doctor_ID }, accessTokenSecret, { expiresIn: '4s' });
+
+        res.redirect(`/home?username=${Doctor_ID}&token=${accessToken}`);
     } catch (error) {
         console.error("Error:", error.message);
         res.status(500).send("An error occurred. Please try again later.");
