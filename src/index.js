@@ -8,6 +8,7 @@ const Prescriptions = require('./prescription.js');
 const Doctor = require('./doctor.js');
 const axios = require('axios');
 const Medicine = require('./medicine.js');
+const Symptom = require('./symptom.js');
 const jwt = require('jsonwebtoken');
 const { GoogleGenerativeAI } = require("@google/generative-ai");
 
@@ -37,6 +38,15 @@ function authenticateToken(req, res, next) {
         next();
     });
 }
+
+// Define a variable to store the time when /appointment route is accessed
+let appointmentTime;
+
+// Middleware to record the time when /appointment route is accessed
+app.use('/appointment', (req, res, next) => {
+    appointmentTime = new Date();
+    next();
+});
 
 app.get('/', (req, res) => {
     res.render('index');
@@ -105,11 +115,13 @@ app.get('/home', authenticateToken, async (req, res) => {
 
 app.get('/appointment', async (req, res) => {
     try {
+        console.log(req.query.name);
         const appoints = req.query.name;
+        console.log(appoints)
         const appoint = await Appointment.find({ Name: appoints });
         const medical = await Medical_records.find({ Name: appoints });
-        console.log(appoint);
-        console.log(medical);
+        console.log(appoint)
+        console.log(medical)
 
         // Extracting the description of the patient's current disease from the appointment dataset
         const description = appoint[0].description;
@@ -124,11 +136,11 @@ app.get('/appointment', async (req, res) => {
         }));
         console.log(aggregatedMedicalRecords);
 
-        const genAI = new GoogleGenerativeAI('AIzaSyDrPrJ3cF1H4NV1zEfPyYNOdUJ2J2BUMSA'); // Replace with your actual Google API key
+        const genAI = new GoogleGenerativeAI('AIzaSyDrPrJ3cF1H4NV1zEfPyYNOdUJ2J2BUMSA');
         const model = genAI.getGenerativeModel({ model: "gemini-pro" });
 
         // Including the description in the prompt sent to Gemini
-        const prompt = `Summarise the medical records  by first showing the patient name, id, current disease and also Provide an analysis of the patient's condition based on the following medical records. Patient's current disease: ${description}, Patient's Name is ${name} and id is ${id}. Remember to make your analysis accurate and never tell anything outside the medical record and also give some suggestions to the doctor, always follow the same text format:\n${JSON.stringify(aggregatedMedicalRecords)}`;
+        const prompt = `Summarise the medical records  by first showing the patient name,id,current disease and also Provide an analysis of the patient's condition based on the following medical records. Patient's current disease: ${description},Patient's Name is ${name} and id is ${id}. Remember to make your analysis accurate and never tell anything outside the medical record and  also give some suggestions to the doctor,always follow same text format:\n${JSON.stringify(aggregatedMedicalRecords)}`;
 
         const result = await model.generateContent(prompt);
         const response = await result.response;
@@ -201,6 +213,23 @@ app.post('/submitMedicalReport', async (req, res) => {
         await newMedicalRecord.save();
         const appointmentToDelete = await Appointment.findOneAndDelete({ Name: name });
 
+        // Calculate the time difference between now and when /appointment route was accessed
+        const currentTime = new Date();
+        const timeDifference = currentTime - appointmentTime; // Difference in milliseconds
+
+        // Convert milliseconds to minutes and round to 2 decimal places
+        const averageTime = Math.round((timeDifference / (1000 * 60)) * 100) / 100; 
+        console.log(Math.floor(averageTime));
+        console.log(description);
+
+        // Store symptom as description and average time as time difference
+        const newSymptom = new Symptom({
+            symptom: description,
+            average_time: Math.floor(averageTime)
+        });
+
+        await newSymptom.save();
+
         // Re-generate a new token to extend session after form submission
         const accessToken = jwt.sign({ username: Doctor_ID }, accessTokenSecret, { expiresIn: '4s' });
 
@@ -210,6 +239,8 @@ app.post('/submitMedicalReport', async (req, res) => {
         res.status(500).send("An error occurred. Please try again later.");
     }
 });
+// Route to handle time data
+
 
 const port = 5000;
 app.listen(port, "0.0.0.0", () => {
